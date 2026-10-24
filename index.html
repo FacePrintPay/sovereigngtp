@@ -1,1070 +1,457 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SovereignGTP | Your AI, Your Rules</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#05050a;--panel:#0d0d16;--panel2:#151522;--border:#252538;--text:#f5f5f7;--dim:#8b8b9e;--accent:#8b5cf6;--accent2:#a78bfa;--cyan:#06b6d4;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
-.mono{font-family:'JetBrains Mono',monospace}
-.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(139,92,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.04) 1px,transparent 1px);background-size:50px 50px;animation:mesh 30s linear infinite}
-@keyframes mesh{from{background-position:0 0}to{background-position:50px 50px}}
-.bg-glow{position:fixed;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(139,92,246,.12) 0%,transparent 50%),radial-gradient(circle at 70% 60%,rgba(6,182,212,.08) 0%,transparent 50%)}
-.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:32px 24px 80px}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SovereignGTP | Your AI, Your Rules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #05050a;
+        --panel: #0d0d16;
+        --panel2: #151522;
+        --border: #252538;
+        --text: #f5f5f7;
+        --dim: #8b8b9e;
+        --accent: #8b5cf6;
+        --accent2: #a78bfa;
+        --cyan: #06b6d4;
+        --green: #22c55e;
+        --red: #ef4444;
+        --amber: #f59e0b;
+      }
 
-/* SOVEREIGN PITCH */
-.sovereign-hero{text-align:center;padding:80px 20px 60px;position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(6,182,212,.05),rgba(139,92,246,.08));border:1px solid rgba(139,92,246,.3);margin-bottom:48px}
-.sovereign-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(139,92,246,.2) 0%,transparent 60%);pointer-events:none}
-.sovereign-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),var(--accent),transparent)}
-.sovereign-logo{width:80px;height:80px;margin:0 auto 24px;position:relative}
-.sovereign-logo svg{width:100%;height:100%;filter:drop-shadow(0 0 20px rgba(139,92,246,.5))}
-.sovereign-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.1);color:var(--green);padding:6px 14px;border-radius:100px;font-size:.75rem;font-weight:600;border:1px solid rgba(34,197,94,.3);margin-bottom:24px}
-.sovereign-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.sovereign-title{font-size:4rem;font-weight:900;letter-spacing:-2px;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,var(--accent2) 40%,var(--cyan) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
-.sovereign-tagline{font-size:1.5rem;color:var(--dim);margin-bottom:12px;font-weight:500}
-.sovereign-desc{font-size:1.05rem;color:var(--dim);max-width:700px;margin:0 auto 32px;line-height:1.6}
-.sovereign-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn{padding:14px 28px;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:none;font-family:'Inter',sans-serif}
-.btn-primary{background:linear-gradient(135deg,var(--accent),var(--cyan));color:#fff;box-shadow:0 4px 20px rgba(139,92,246,.4)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,92,246,.6)}
-.btn-outline{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);backdrop-filter:blur(10px)}
-.btn-outline:hover{border-color:var(--accent);background:rgba(139,92,246,.08)}
-.btn-call{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;box-shadow:0 4px 20px rgba(34,197,94,.3)}
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+      }
+      a { color: inherit; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
 
-/* Challenge Section */
-.challenge{margin-bottom:48px}
-.challenge-header{text-align:center;margin-bottom:32px}
-.challenge-header .eyebrow{color:var(--red);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.challenge-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-.challenge-header p{color:var(--dim);font-size:1rem;max-width:700px;margin:0 auto}
-.challenge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.challenge-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden}
-.challenge-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--amber))}
-.challenge-card .icon{width:44px;height:44px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px}
-.challenge-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
-.challenge-card p{font-size:.85rem;color:var(--dim);line-height:1.6}
+      .bg-mesh {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(139,92,246,.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(139,92,246,.04) 1px, transparent 1px);
+        background-size: 28px 28px;
+        animation: mesh 18s linear infinite;
+      }
+      @keyframes mesh {
+        from { background-position: 0 0; }
+        to { background-position: 50px 50px; }
+      }
 
-/* Solution Section */
-.solution{margin-bottom:48px;background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(139,92,246,.05));border:1px solid rgba(34,197,94,.2);border-radius:20px;padding:40px;position:relative;overflow:hidden}
-.solution::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),var(--accent),transparent)}
-.solution-header{text-align:center;margin-bottom:32px}
-.solution-header .eyebrow{color:var(--green);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.solution-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px}
-.solution-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.solution-card{background:rgba(13,13,22,.6);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:22px}
-.solution-card .icon{width:40px;height:40px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:12px}
-.solution-card h3{font-size:.95rem;font-weight:700;margin-bottom:8px;color:var(--text)}
-.solution-card p{font-size:.82rem;color:var(--dim);line-height:1.6}
+      .bg-glow {
+        position: fixed;
+        inset: -20%;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 30% 20%, rgba(139,92,246,.12) 0%, transparent 50%),
+          radial-gradient(circle at 70% 60%, rgba(6,182,212,.10) 0%, transparent 45%);
+      }
 
-/* Architecture */
-.arch{margin-bottom:48px}
-.arch-header{text-align:center;margin-bottom:32px}
-.arch-header .eyebrow{color:var(--cyan);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.arch-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px}
-.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.arch-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden}
-.arch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan))}
-.arch-num{position:absolute;top:16px;right:16px;font-size:2.5rem;font-weight:900;color:rgba(139,92,246,.12);font-family:'JetBrains Mono',monospace;line-height:1}
-.arch-card h3{font-size:1.05rem;font-weight:700;margin-bottom:10px;color:var(--text)}
-.arch-card p{font-size:.85rem;color:var(--dim);line-height:1.6}
+      .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px 80px;
+      }
 
-/* Live Platforms */
-.platforms{margin-bottom:48px}
-.platforms-header{text-align:center;margin-bottom:32px}
-.platforms-header .eyebrow{color:var(--green);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.platforms-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-.platforms-header p{color:var(--dim);font-size:1rem}
-.platform-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.platform-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;transition:.2s;cursor:pointer;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden}
-.platform-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan));opacity:0;transition:.3s}
-.platform-card:hover{border-color:rgba(139,92,246,.4);transform:translateY(-4px);box-shadow:0 12px 40px rgba(139,92,246,.15)}
-.platform-card:hover::before{opacity:1}
-.platform-domain{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.platform-domain::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green)}
-.platform-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-.platform-card p{font-size:.85rem;color:var(--dim);line-height:1.6}
+      .hero {
+        text-align: center;
+        padding: 48px 20px 32px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(139,92,246,.08), rgba(6,182,212,.05), rgba(139,92,246,.06));
+        border: 1px solid rgba(139,92,246,.22);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(139,92,246,.2) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(34,197,94,.1);
+        color: var(--green);
+        border: 1px solid rgba(34,197,94,.3);
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      .hero-badge .dot {
+        width: 7px;
+        height: 7px;
+        background: var(--green);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .45; }
+      }
 
-/* Market */
-.market{margin-bottom:48px}
-.market-header{text-align:center;margin-bottom:32px}
-.market-header .eyebrow{color:var(--amber);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.market-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px}
-.market-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.market-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center;position:relative;overflow:hidden}
-.market-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),var(--accent))}
-.market-val{font-size:2.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,#fff,var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.market-lbl{font-size:.9rem;font-weight:600;margin-bottom:6px}
-.market-desc{font-size:.78rem;color:var(--dim);line-height:1.5}
+      .hero-title {
+        margin-top: 18px;
+        font-size: clamp(2.5rem, 5vw, 5rem);
+        font-weight: 900;
+        letter-spacing: -2px;
+        background: linear-gradient(135deg, #fff 0%, var(--accent2) 40%, var(--cyan) 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero-tagline {
+        margin-top: 12px;
+        font-size: clamp(1.2rem, 2vw, 1.7rem);
+        color: var(--dim);
+      }
+      .hero-desc {
+        max-width: 760px;
+        margin: 16px auto 0;
+        color: var(--dim);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        padding: 14px 22px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s ease;
+        border: 1px solid var(--border);
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--accent), var(--cyan));
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(139,92,246,.32);
+      }
+      .btn.secondary {
+        background: rgba(255,255,255,.03);
+        color: var(--text);
+      }
+      .btn:hover { transform: translateY(-2px); }
 
-/* Validation */
-.validation{margin-bottom:48px;background:linear-gradient(135deg,rgba(139,92,246,.05),rgba(6,182,212,.05));border:1px solid rgba(139,92,246,.2);border-radius:20px;padding:40px}
-.validation-header{text-align:center;margin-bottom:32px}
-.validation-header .eyebrow{color:var(--accent2);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.validation-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px}
-.validation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-.validation-card{background:rgba(13,13,22,.6);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
-.validation-val{font-size:2rem;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--accent2);margin-bottom:6px}
-.validation-lbl{font-size:.85rem;font-weight:600;margin-bottom:4px}
-.validation-desc{font-size:.75rem;color:var(--dim)}
+      .section {
+        margin-top: 42px;
+        padding: 28px 20px;
+        background: rgba(13,13,22,.72);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+      }
+      .section-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: .74rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 800;
+        color: var(--accent2);
+        margin-bottom: 8px;
+      }
+      .section-header h2 {
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        letter-spacing: -1px;
+      }
+      .section-header p {
+        margin-top: 8px;
+        color: var(--dim);
+      }
 
-/* Revenue */
-.revenue{margin-bottom:48px}
-.revenue-header{text-align:center;margin-bottom:32px}
-.revenue-header .eyebrow{color:var(--green);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.revenue-header h2{font-size:2.25rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-.revenue-header p{color:var(--dim);font-size:1rem}
-.revenue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.revenue-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden}
-.revenue-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--accent))}
-.revenue-card h3{font-size:1.05rem;font-weight:700;margin-bottom:10px;color:var(--text)}
-.revenue-card .price{font-size:1.5rem;font-weight:800;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
-.revenue-card p{font-size:.85rem;color:var(--dim);line-height:1.6}
-.revenue-target{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:16px;text-align:center}
-.revenue-target p{font-size:.9rem;color:var(--text);line-height:1.6}
-.revenue-target strong{color:var(--green)}
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--red), var(--amber));
+      }
+      .card h3 {
+        margin-top: 12px;
+        margin-bottom: 8px;
+        font-size: 1.08rem;
+      }
+      .card p {
+        color: var(--dim);
+        font-size: .9rem;
+        line-height: 1.6;
+      }
+      .card .icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: rgba(239,68,68,.10);
+        border: 1px solid rgba(239,68,68,.28);
+        font-size: 1.2rem;
+      }
 
-/* Founder */
-.founder{margin-bottom:48px;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:40px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
-@media(max-width:768px){.founder{grid-template-columns:1fr;text-align:center}}
-.founder-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:900;color:#fff;box-shadow:0 0 40px rgba(139,92,246,.3)}
-.founder-info .eyebrow{color:var(--accent2);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
-.founder-info h2{font-size:1.75rem;font-weight:800;margin-bottom:4px}
-.founder-info .role{color:var(--dim);font-size:.95rem;margin-bottom:16px}
-.founder-info p{font-size:.9rem;color:var(--dim);line-height:1.6;margin-bottom:12px}
-.founder-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.founder-tag{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:var(--accent2);padding:4px 10px;border-radius:100px;font-size:.72rem;font-weight:600}
-.founder-info .seeking{background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:14px;font-size:.85rem;color:var(--text);line-height:1.5}
+      .backend-panel {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        margin: 28px auto 0;
+        padding: 18px 20px;
+        border: 1px solid rgba(139, 92, 246, 0.35);
+        background: rgba(13, 13, 22, 0.8);
+        border-radius: 14px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      }
+      .backend-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .backend-panel-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: #fff;
+      }
+      .backend-status {
+        color: #d1d5db;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        min-height: 24px;
+      }
+      .backend-status strong {
+        color: #a78bfa;
+      }
+      .backend-status .offline {
+        color: #f59e0b;
+      }
+      .backend-status .online {
+        color: #22c55e;
+      }
+      .backend-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .backend-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #fff;
+        background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .backend-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px rgba(139, 92, 246, 0.35);
+      }
+      .backend-btn.secondary {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+      }
 
-/* Join Us */
-.join{margin-bottom:48px;text-align:center;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(6,182,212,.08));border:1px solid rgba(139,92,246,.3);border-radius:20px;padding:60px 40px;position:relative;overflow:hidden}
-.join::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent)}
-.join .eyebrow{color:var(--accent2);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
-.join h2{font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:16px}
-.join p{color:var(--dim);font-size:1.05rem;max-width:600px;margin:0 auto 32px;line-height:1.6}
-.join-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:900px;margin:0 auto 32px}
-.join-card{background:rgba(13,13,22,.6);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:left}
-.join-card .icon{font-size:1.5rem;margin-bottom:12px}
-.join-card h3{font-size:1rem;font-weight:700;margin-bottom:6px}
-.join-card p{font-size:.82rem;color:var(--dim);margin:0;line-height:1.5}
+      footer {
+        text-align: center;
+        color: var(--dim);
+        padding: 28px 0 0;
+        font-size: .8rem;
+      }
+      footer a { color: var(--accent2); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div class="bg-mesh"></div>
+    <div class="bg-glow"></div>
 
-/* Footer Tagline */
-.sovereign-footer{text-align:center;padding:40px 20px;font-size:2rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-
-/* Existing sections */
-header{text-align:center;padding:40px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px}
-.logo-mark{width:48px;height:48px}
-h1{font-size:2.5rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#fff,var(--accent2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.tagline{color:var(--dim);font-size:1rem;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px}
-.stat{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
-.stat-val{font-size:1.75rem;font-weight:800;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-lbl{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-
-.tech-hub{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(6,182,212,.05));border:1px solid rgba(139,92,246,.3);border-radius:16px;padding:32px;margin-bottom:32px;position:relative;overflow:hidden}
-.tech-hub::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent)}
-.tech-hub-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:16px}
-.tech-hub-title{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:12px}
-.tech-hub-title .icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-.tech-hub-sub{color:var(--dim);font-size:.9rem;margin-top:6px;max-width:700px;line-height:1.6}
-.tech-hub-badge{background:rgba(34,197,94,.15);color:var(--green);padding:6px 14px;border-radius:100px;font-size:.75rem;font-weight:600;border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;gap:6px}
-.tech-hub-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-.hub-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);overflow-x:auto}
-.hub-tab{padding:10px 16px;background:transparent;border:none;color:var(--dim);font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;border-bottom:2px solid transparent;font-family:'Inter',sans-serif}
-.hub-tab:hover{color:var(--text)}
-.hub-tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
-.hub-panel{display:none}
-.hub-panel.active{display:block;animation:fadeIn .3s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.infra-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.infra-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
-.infra-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan))}
-.infra-num{position:absolute;top:16px;right:16px;font-size:2rem;font-weight:900;color:rgba(139,92,246,.15);font-family:'JetBrains Mono',monospace}
-.infra-title{font-size:1rem;font-weight:700;margin-bottom:10px;color:var(--text)}
-.infra-desc{font-size:.82rem;color:var(--dim);line-height:1.6;margin-bottom:12px}
-.infra-list{list-style:none}
-.infra-list li{font-size:.78rem;color:var(--dim);padding:4px 0 4px 16px;position:relative}
-.infra-list li::before{content:'▸';position:absolute;left:0;color:var(--accent2)}
-.phase-list{display:flex;flex-direction:column;gap:12px}
-.phase{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;display:flex;gap:16px;align-items:flex-start}
-.phase-num{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--cyan));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
-.phase-body{flex:1}
-.phase-title{font-size:.95rem;font-weight:700;margin-bottom:6px}
-.phase-desc{font-size:.82rem;color:var(--dim);line-height:1.6}
-.cmd-block{background:#0a0a10;border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a78bfa;overflow-x:auto;white-space:pre;line-height:1.6}
-.cmd-block .comment{color:#6b7280}
-.cmd-block .cmd{color:#22c55e}
-.issue-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px}
-.issue-title{font-size:.9rem;font-weight:700;color:var(--amber);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.issue-title::before{content:'⚠';font-size:1rem}
-.issue-desc{font-size:.82rem;color:var(--dim);line-height:1.6;margin-bottom:12px}
-.issue-fix{list-style:none}
-.issue-fix li{font-size:.78rem;color:var(--dim);padding:4px 0 4px 16px;position:relative;font-family:'JetBrains Mono',monospace}
-.issue-fix li::before{content:'$';position:absolute;left:0;color:var(--green)}
-.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
-.metric{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
-.metric-val{font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent2)}
-.metric-lbl{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.metric-target{font-size:.7rem;color:var(--green);margin-top:4px}
-.action-list{display:flex;flex-direction:column;gap:10px}
-.action-item{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;gap:14px;align-items:flex-start}
-.action-num{width:28px;height:28px;background:rgba(139,92,246,.15);border:1px solid var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:var(--accent2);flex-shrink:0}
-.action-body{flex:1}
-.action-title{font-size:.9rem;font-weight:700;margin-bottom:4px}
-.action-desc{font-size:.8rem;color:var(--dim);line-height:1.5}
-
-.controls{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
-.search{flex:1;min-width:250px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:.95rem;outline:none;transition:.2s}
-.search:focus{border-color:var(--accent);box-shadow:0 0 20px rgba(139,92,246,.2)}
-.search::placeholder{color:var(--dim)}
-.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
-.chip{padding:6px 14px;border-radius:100px;background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.78rem;cursor:pointer;transition:.15s;font-weight:500;white-space:nowrap}
-.chip:hover{border-color:var(--accent);color:var(--text)}
-.chip.active{background:rgba(139,92,246,.15);border-color:var(--accent);color:#fff}
-.results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--border);border-radius:10px}
-.results-count{font-size:.85rem;color:var(--dim)}
-.results-count strong{color:var(--accent2)}
-.artifact-list{display:flex;flex-direction:column;gap:8px}
-.artifact{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.artifact::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:.3s}
-.artifact:hover{border-color:rgba(139,92,246,.4);transform:translateX(4px)}
-.artifact:hover::before{opacity:1}
-.art-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace}
-.art-icon.py{background:rgba(59,130,246,.15);color:#60a5fa}
-.art-icon.sh{background:rgba(34,197,94,.15);color:#4ade80}
-.art-icon.html{background:rgba(249,115,22,.15);color:#fb923c}
-.art-icon.md{background:rgba(139,92,246,.15);color:#a78bfa}
-.art-icon.json{background:rgba(245,158,11,.15);color:#fbbf24}
-.art-icon.sys{background:rgba(6,182,212,.15);color:#22d3ee}
-.art-icon.legal{background:rgba(239,68,68,.15);color:#f87171}
-.art-icon.deck{background:rgba(236,72,153,.15);color:#f472b6}
-.art-icon.js{background:rgba(250,204,21,.15);color:#facc15}
-.art-body{flex:1;min-width:0}
-.art-title{font-size:.9rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.art-meta{display:flex;gap:12px;margin-top:4px;font-size:.72rem;color:var(--dim);align-items:center;flex-wrap:wrap}
-.art-cat{padding:2px 8px;border-radius:4px;background:rgba(139,92,246,.1);color:var(--accent2);font-size:.68rem;font-weight:600}
-.art-actions{display:flex;gap:6px;flex-shrink:0}
-.art-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);padding:6px 10px;border-radius:6px;font-size:.72rem;cursor:pointer;transition:.15s;white-space:nowrap;text-decoration:none}
-.art-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-.art-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#fff;padding:12px 24px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:1000;transition:.3s;opacity:0;pointer-events:none}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.empty{text-align:center;padding:60px 20px;color:var(--dim)}
-.empty-icon{font-size:3rem;margin-bottom:16px;opacity:.5}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(10px)}
-.modal-bg.active{display:flex}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
-.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:rgba(255,255,255,.05);color:var(--text)}
-.modal h3{font-size:1.3rem;font-weight:700;margin-bottom:8px;padding-right:40px}
-.modal-meta{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.modal-desc{color:var(--dim);line-height:1.6;margin-bottom:20px;font-size:.9rem}
-.modal-section{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
-.modal-section h4{font-size:.8rem;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.modal-section p,.modal-section code{font-size:.85rem;color:var(--dim);font-family:'JetBrains Mono',monospace;word-break:break-all}
-.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
-.modal-actions .art-btn{flex:1;text-align:center;padding:10px}
-footer{text-align:center;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:60px;color:var(--dim);font-size:.8rem}
-footer a{color:var(--accent2);text-decoration:none}
-@media(max-width:768px){h1{font-size:1.75rem}.sovereign-title{font-size:2.5rem}.artifact{flex-wrap:wrap}.art-actions{width:100%;margin-top:8px}.art-btn{flex:1;text-align:center}.tech-hub{padding:20px}.tech-hub-title{font-size:1.2rem}.founder{padding:24px}}
-</style>
-</head>
-<body>
-<div class="bg-mesh"></div>
-<div class="bg-glow"></div>
-
-<div class="wrap">
-
-  <!-- SOVEREIGN PITCH -->
-  <section class="sovereign-hero">
-    <div class="sovereign-logo">
-      <svg viewBox="0 0 80 80">
-        <defs>
-          <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#8b5cf6"/>
-            <stop offset="50%" stop-color="#a78bfa"/>
-            <stop offset="100%" stop-color="#06b6d4"/>
-          </linearGradient>
-        </defs>
-        <path d="M40 4 L72 20 L72 60 L40 76 L8 60 L8 20 Z" fill="none" stroke="url(#sg)" stroke-width="2"/>
-        <path d="M25 55 L40 25 L55 55 M30 45 L50 45" fill="none" stroke="url(#sg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="40" cy="25" r="3" fill="#06b6d4"/>
-        <circle cx="25" cy="55" r="3" fill="#8b5cf6"/>
-        <circle cx="55" cy="55" r="3" fill="#a78bfa"/>
-      </svg>
-    </div>
-    <div class="sovereign-badge"><span class="dot"></span> SOVEREIGN AI PLATFORM</div>
-    <h1 class="sovereign-title">SovereignGTP</h1>
-    <p class="sovereign-tagline">Your AI, Your Rules.</p>
-    <p class="sovereign-desc">Zero-cloud sovereign platform running legal, banking, and commerce agents entirely on-device with biometric authentication. Court-admissible. Enterprise-grade. 100% sovereign.</p>
-    <div class="sovereign-cta">
-      <a href="#join" class="btn btn-primary">🚀 Join YC S2026</a>
-      <a href="#platforms" class="btn btn-outline">View Live Platforms</a>
-      <a href="tel:9205501279" class="btn btn-call">📞 Call Founder</a>
-    </div>
-  </section>
-
-  <!-- CHALLENGE -->
-  <section class="challenge">
-    <div class="challenge-header">
-      <div class="eyebrow">The Challenge</div>
-      <h2>The $847B Trust Crisis</h2>
-      <p>Current AI platforms expose three critical vulnerabilities that enterprises can't afford. Legal, banking, and commerce sectors need court-admissible, sovereign AI that never touches the cloud.</p>
-    </div>
-    <div class="challenge-grid">
-      <div class="challenge-card">
-        <div class="icon">☁️</div>
-        <h3>Cloud Dependency</h3>
-        <p>Data leaves your control, creating compliance nightmares and regulatory risks. Every API call is a potential breach waiting to happen.</p>
-      </div>
-      <div class="challenge-card">
-        <div class="icon">🔓</div>
-        <h3>IP Exposure</h3>
-        <p>Training on your data means losing competitive advantage to cloud providers. Your proprietary workflows become their training material.</p>
-      </div>
-      <div class="challenge-card">
-        <div class="icon">🔑</div>
-        <h3>Authentication Gaps</h3>
-        <p>Password-based security fails under regulatory scrutiny and audit requirements. Courts demand biometric proof, not login credentials.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- SOLUTION -->
-  <section class="solution">
-    <div class="solution-header">
-      <div class="eyebrow">The Solution</div>
-      <h2>100% On-Device Sovereign AI</h2>
-    </div>
-    <div class="solution-grid">
-      <div class="solution-card">
-        <div class="icon">👆</div>
-        <h3>Biometric Auth</h3>
-        <p>Multi-factor facial recognition and fingerprint verification creates court-admissible audit trails for complete accountability.</p>
-      </div>
-      <div class="solution-card">
-        <div class="icon">🛡️</div>
-        <h3>Zero Cloud</h3>
-        <p>All processing happens on-device. Your data never leaves your infrastructure or control. No API calls. No data exfiltration.</p>
-      </div>
-      <div class="solution-card">
-        <div class="icon">🤖</div>
-        <h3>Specialized Agents</h3>
-        <p>Legal, banking, and commerce AI agents trained for compliance-heavy workflows and regulations. Purpose-built, not generic.</p>
-      </div>
-      <div class="solution-card">
-        <div class="icon">🔐</div>
-        <h3>IP Protection</h3>
-        <p>Forensically verified outputs with 41.8 GB vault architecture for complete traceability and security. Immutable audit trails.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ARCHITECTURE -->
-  <section class="arch">
-    <div class="arch-header">
-      <div class="eyebrow">Platform Architecture</div>
-      <h2>Three-Layer Sovereign Stack</h2>
-    </div>
-    <div class="arch-grid">
-      <div class="arch-card">
-        <div class="arch-num">1</div>
-        <h3>Sovereign Data Layer</h3>
-        <p>41.8 GB forensic vault with immutable audit trails and blockchain verification for complete data sovereignty. Every action cryptographically signed and timestamped.</p>
-      </div>
-      <div class="arch-card">
-        <div class="arch-num">2</div>
-        <h3>Multi-Agent Core</h3>
-        <p>25 planetary agents + 27 modular systems orchestrated through proprietary PaTHos NLP language. Autonomous execution with human-in-the-loop authorization.</p>
-      </div>
-      <div class="arch-card">
-        <div class="arch-num">3</div>
-        <h3>Compliance Gateway</h3>
-        <p>SOC2-compliant biometric payment processing with court-admissible authentication for regulatory requirements. Audit-ready from day one.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- LIVE PLATFORMS -->
-  <section class="platforms" id="platforms">
-    <div class="platforms-header">
-      <div class="eyebrow">Live Platforms</div>
-      <h2>Proven Ecosystem</h2>
-      <p>Four live platforms demonstrating sovereign AI across critical verticals with real-world deployment and validation.</p>
-    </div>
-    <div class="platform-grid">
-      <a href="https://videocourts.com" target="_blank" class="platform-card">
-        <div class="platform-domain">videocourts.com</div>
-        <h3>VideoCourts</h3>
-        <p>Legal AI agents handling case management, document analysis, and compliance workflows with biometric verification. Court-admissible forensic analysis.</p>
-      </a>
-      <a href="https://mybuyo.com" target="_blank" class="platform-card">
-        <div class="platform-domain">mybuyo.com</div>
-        <h3>MyBuyo</h3>
-        <p>Commerce platform with on-device payment processing and FacePrintPay biometric authentication gateway. Zero-cloud checkout.</p>
-      </a>
-      <a href="https://airecords.org" target="_blank" class="platform-card">
-        <div class="platform-domain">airecords.org</div>
-        <h3>AiRecords</h3>
-        <p>Sovereign music creation and rights management protecting artist IP through blockchain verification. Creator-owned forever.</p>
-      </a>
-      <a href="https://kre8tive.space" target="_blank" class="platform-card">
-        <div class="platform-domain">kre8tive.space</div>
-        <h3>Kre8tive.Space</h3>
-        <p>Creative AI studio demonstrating multi-agent orchestration and XR integration capabilities at scale. The flagship showcase.</p>
-      </a>
-    </div>
-  </section>
-
-  <!-- MARKET -->
-  <section class="market">
-    <div class="market-header">
-      <div class="eyebrow">Market Opportunity</div>
-      <h2>Massive TAM Across Verticals</h2>
-    </div>
-    <div class="market-grid">
-      <div class="market-card">
-        <div class="market-val">$1.3T</div>
-        <div class="market-lbl">Legal Tech TAM</div>
-        <div class="market-desc">Global legal technology market by 2028, growing 18% annually with compliance-driven demand.</div>
-      </div>
-      <div class="market-card">
-        <div class="market-val">$97B</div>
-        <div class="market-lbl">Banking AI</div>
-        <div class="market-desc">Financial services AI spend by 2027, compliance-driven growth accelerating sovereign adoption.</div>
-      </div>
-      <div class="market-card">
-        <div class="market-val">$305B</div>
-        <div class="market-lbl">Enterprise AI</div>
-        <div class="market-desc">Total addressable market for sovereign enterprise AI solutions across all sectors.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- VALIDATION -->
-  <section class="validation">
-    <div class="validation-header">
-      <div class="eyebrow">Technical Validation</div>
-      <h2>Proven Execution</h2>
-    </div>
-    <div class="validation-grid">
-      <div class="validation-card">
-        <div class="validation-val">100+</div>
-        <div class="validation-lbl">Projects</div>
-        <div class="validation-desc">Proven execution across AI, infrastructure, and XR</div>
-      </div>
-      <div class="validation-card">
-        <div class="validation-val">41.8GB</div>
-        <div class="validation-lbl">Vault</div>
-        <div class="validation-desc">Immutable IP archive with forensic capabilities</div>
-      </div>
-      <div class="validation-card">
-        <div class="validation-val">52</div>
-        <div class="validation-lbl">Agent Systems</div>
-        <div class="validation-desc">25 planetary + 27 modular in production</div>
-      </div>
-      <div class="validation-card">
-        <div class="validation-val">4</div>
-        <div class="validation-lbl">Live Platforms</div>
-        <div class="validation-desc">Real-world deployment and validation</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- REVENUE -->
-  <section class="revenue">
-    <div class="revenue-header">
-      <div class="eyebrow">Revenue Model</div>
-      <h2>$3B+ ARR Vision</h2>
-      <p>Three diversified revenue streams targeting enterprise clients with compliance-driven needs.</p>
-    </div>
-    <div class="revenue-grid">
-      <div class="revenue-card">
-        <h3>Enterprise Licensing</h3>
-        <div class="price">$50K-$500K/yr</div>
-        <p>Annual contracts for legal firms, banks, healthcare. White-label sovereign AI deployment with full customization.</p>
-      </div>
-      <div class="revenue-card">
-        <h3>Transaction Fees</h3>
-        <div class="price">0.5-2%</div>
-        <p>On biometric payments through MyBuyo commerce platform and sovereign payment gateway licensing.</p>
-      </div>
-      <div class="revenue-card">
-        <h3>Platform Services</h3>
-        <div class="price">Custom</div>
-        <p>Custom agent development, compliance certification, integration and support for enterprise clients.</p>
-      </div>
-    </div>
-    <div class="revenue-target">
-      <p><strong>Year 1 target:</strong> $2M ARR from 20 enterprise pilots. Scale to <strong>$50M+ by Year 3</strong> as compliance requirements accelerate sovereign AI adoption.</p>
-    </div>
-  </section>
-
-  <!-- FOUNDER -->
-  <section class="founder">
-    <div class="founder-avatar">CW</div>
-    <div class="founder-info">
-      <div class="eyebrow">Founder</div>
-      <h2>Cygel White</h2>
-      <div class="role">Solo Technical Founder • 15+ years mobile & startup experience</div>
-      <p>Known as <strong>#MrGGTP</strong> and <strong>#AiKi</strong> in dev communities. Architected 100+ AI, XR, and infrastructure projects. Solo execution of multi-agent ecosystems at scale.</p>
-      <div class="founder-tags">
-        <span class="founder-tag">PaTHos NLP Creator</span>
-        <span class="founder-tag">Vercel Deployed</span>
-        <span class="founder-tag">Firebase Expert</span>
-        <span class="founder-tag">AWS Certified</span>
-        <span class="founder-tag">Alibaba Cloud</span>
-        <span class="founder-tag">Termux Architect</span>
-      </div>
-      <div class="seeking">
-        <strong>Seeking:</strong> Technical co-founder, go-to-market leader, and investors who understand the strategic value of sovereignty in the AI era.
-      </div>
-    </div>
-  </section>
-
-  <!-- JOIN US -->
-  <section class="join" id="join">
-    <div class="eyebrow">Join Us</div>
-    <h2>The Ask</h2>
-    <p>Partner with us to scale SovereignGTP from proven technical foundation to category-defining platform. Live demo available showing biometric authentication, on-device processing, and court-admissible audit trails.</p>
-    <div class="join-grid">
-      <div class="join-card">
-        <div class="icon">🎓</div>
-        <h3>Join YC S2026</h3>
-        <p>Partner with us to scale SovereignGTP from proven technical foundation to category-defining platform.</p>
-      </div>
-      <div class="join-card">
-        <div class="icon">💰</div>
-        <h3>$2M Seed Round</h3>
-        <p>Accelerate enterprise pilots, expand agent capabilities, and build go-to-market team for rapid scaling.</p>
-      </div>
-      <div class="join-card">
-        <div class="icon">🤝</div>
-        <h3>Strategic Partners</h3>
-        <p>Connect with legal, banking, and commerce enterprises ready to deploy sovereign AI solutions.</p>
-      </div>
-    </div>
-    <div class="sovereign-cta">
-      <a href="mailto:cygel.co@gmail.com" class="btn btn-primary">📧 Email Founder</a>
-      <a href="tel:9205501279" class="btn btn-call">📞 920-550-1279</a>
-      <a href="https://github.com/FacePrintPay" target="_blank" class="btn btn-outline">View GitHub</a>
-    </div>
-  </section>
-
-  <div class="sovereign-footer">Your AI, Your Rules</div>
-
-  <!-- EXISTING REGISTRY -->
-  <header>
-    <div class="logo-row">
-      <svg class="logo-mark" viewBox="0 0 42 42">
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
-        <path d="M21 2 L38 11 L38 31 L21 40 L4 31 L4 11 Z" fill="none" stroke="url(#lg)" stroke-width="1.5"/>
-        <path d="M13 28 L21 12 L29 28 M16 22 L26 22" fill="none" stroke="url(#lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="21" cy="12" r="1.5" fill="#06b6d4"/>
-      </svg>
-      <h1>Sovereign Artifact Registry</h1>
-    </div>
-    <p class="tagline">Complete index of all artifacts, builds, and systems across the AiKre8tive ecosystem</p>
-  </header>
-
-  <div class="stats" id="stats"></div>
-
-  <!-- TECHNICAL HUB -->
-  <div class="tech-hub">
-    <div class="tech-hub-header">
-      <div>
-        <div class="tech-hub-title">
-          <div class="icon">🔧</div>
-          Claude Artifacts Consolidation & Deployment Hub
+    <div class="wrap">
+      <section class="hero">
+        <div class="hero-badge"><span class="dot"></span> Sovereign AI Platform</div>
+        <h1 class="hero-title">SovereignGTP</h1>
+        <p class="hero-tagline">Your AI, Your Rules.</p>
+        <p class="hero-desc">
+          Zero-cloud sovereign infrastructure for legal, banking, and commerce workflows with on-device intelligence,
+          biometric verification, and secure execution paths designed for compliance-heavy operations.
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="#backend">Connect backend</a>
+          <a class="btn secondary" href="https://github.com/FacePrintPay" target="_blank" rel="noreferrer">View GitHub</a>
         </div>
-        <p class="tech-hub-sub">A comprehensive technical resource center for engineering leads managing the complete lifecycle of Claude-generated artifacts across multiple systems, repositories, and deployment environments. 583,000+ artifacts across GitHub, Vercel, Cloudflare Workers, and Termux.</p>
-      </div>
-      <div class="tech-hub-badge"><span class="dot"></span> SYSTEM OPERATIONAL</div>
-    </div>
+      </section>
 
-    <div class="hub-tabs">
-      <button class="hub-tab active" data-tab="infra">Infrastructure</button>
-      <button class="hub-tab" data-tab="artifacts">Critical Artifacts</button>
-      <button class="hub-tab" data-tab="phases">Action Plan</button>
-      <button class="hub-tab" data-tab="security">Security</button>
-      <button class="hub-tab" data-tab="commands">Commands</button>
-      <button class="hub-tab" data-tab="troubleshoot">Troubleshooting</button>
-      <button class="hub-tab" data-tab="metrics">Metrics</button>
-    </div>
-
-    <div class="hub-panel active" data-panel="infra">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Deployment Environment Specifications</h3>
-      <div class="infra-grid">
-        <div class="infra-card">
-          <div class="infra-num">01</div>
-          <div class="infra-title">GitHub Repository Layer</div>
-          <div class="infra-desc">Primary version control system hosting 200+ repositories including SovereignGTP, VideoCourts, AGENTIK, PaTHos, and numerous agent systems.</div>
-          <ul class="infra-list">
-            <li>Multi-repository monorepo consolidation</li>
-            <li>Branch protection rules and merge conflict resolution</li>
-            <li>Secrets management for API keys and tokens</li>
-            <li>Automated PR creation and review workflows</li>
-          </ul>
+      <div id="backend" class="backend-panel">
+        <div class="backend-panel-header">
+          <h3>Backend connection</h3>
+          <span class="mono" style="font-size:0.72rem;color:#8b8b9e;">SovereignGTP API</span>
         </div>
-        <div class="infra-card">
-          <div class="infra-num">02</div>
-          <div class="infra-title">Vercel Deployment Platform</div>
-          <div class="infra-desc">Serverless hosting infrastructure managing 50+ active deployments across multiple projects. Handles React, Next.js, and API endpoints.</div>
-          <ul class="infra-list">
-            <li>Environment variable synchronization</li>
-            <li>Build optimization and function size limits (50MB)</li>
-            <li>Domain configuration and DNS management</li>
-            <li>Analytics integration and performance monitoring</li>
-          </ul>
-        </div>
-        <div class="infra-card">
-          <div class="infra-num">03</div>
-          <div class="infra-title">Termux Mobile Environment</div>
-          <div class="infra-desc">Android-based Linux terminal environment serving as primary development platform. Runs multiple agent systems simultaneously.</div>
-          <ul class="infra-list">
-            <li>APT repository configuration and package updates</li>
-            <li>Storage management (10-20GB typical)</li>
-            <li>Process supervision and daemon management</li>
-            <li>SSH server setup for remote access</li>
-          </ul>
-        </div>
-        <div class="infra-card">
-          <div class="infra-num">04</div>
-          <div class="infra-title">Cloud Infrastructure Integration</div>
-          <div class="infra-desc">Multi-cloud architecture spanning Google Cloud Platform, Cloudflare Workers, and various API services.</div>
-          <ul class="infra-list">
-            <li>GCP service account management and permissions</li>
-            <li>Cloudflare R2 backup and CDN configuration</li>
-            <li>Rclone multi-account synchronization (6+ accounts)</li>
-            <li>API gateway routing and load balancing</li>
-          </ul>
+        <div id="backendStatus" class="backend-status">Checking backend...</div>
+        <div class="backend-actions">
+          <button id="checkBackendBtn" class="backend-btn">Check backend</button>
+          <button id="sendPromptBtn" class="backend-btn secondary">Send status probe</button>
         </div>
       </div>
-    </div>
 
-    <div class="hub-panel" data-panel="artifacts">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Critical Artifacts Inventory & Classification</h3>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--cyan)">🏗️ Core Infrastructure Scripts</h4>
-        <p style="font-size:.82rem;color:var(--dim);margin-bottom:12px">Essential deployment automation and system setup scripts that form the foundation of the entire ecosystem.</p>
-        <ul class="infra-list">
-          <li>constellation-orchestrator.py (25-agent system)</li>
-          <li>compile_artifacts.sh (artifact aggregation)</li>
-          <li>claude-github-sync.sh (automation backbone)</li>
-          <li>Ultimate 1BASH Deploy All Script</li>
-        </ul>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--accent2)">🚀 Application Platforms</h4>
-        <p style="font-size:.82rem;color:var(--dim);margin-bottom:12px">Full-stack applications with complex dependencies, database requirements, and multi-component architectures.</p>
-        <ul class="infra-list">
-          <li>SovereignGTP (AI command center)</li>
-          <li>VideoCourts (legal platform)</li>
-          <li>AGENTIK (agent orchestration)</li>
-          <li>PaTHos (development framework)</li>
-        </ul>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--green)">🤖 Agent Systems & Orchestrators</h4>
-        <p style="font-size:.82rem;color:var(--dim);margin-bottom:12px">Autonomous agent implementations with task queues, monitoring systems, and inter-agent communication protocols.</p>
-        <ul class="infra-list">
-          <li>Planetary Agent swarm systems</li>
-          <li>Mercury Agent URL monitoring</li>
-          <li>Venus Marketing Agent</li>
-          <li>Worker orchestration engines</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="hub-panel" data-panel="phases">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Immediate Consolidation Priorities</h3>
-      <div class="phase-list">
-        <div class="phase"><div class="phase-num">1</div><div class="phase-body"><div class="phase-title">Artifact Discovery & Cataloging</div><div class="phase-desc">Execute comprehensive filesystem scans across all environments to build complete artifact inventory. Use Termux system-wide scanner to locate all 583,000+ files, categorize by project, and identify duplicate or deprecated versions.</div></div></div>
-        <div class="phase"><div class="phase-num">2</div><div class="phase-body"><div class="phase-title">Cleanup & Deduplication</div><div class="phase-desc">Remove redundant artifacts, deprecated scripts, and conflicting versions. Consolidate multiple implementations of similar functionality. Free up 40-60% of storage space through intelligent pruning.</div></div></div>
-        <div class="phase"><div class="phase-num">3</div><div class="phase-body"><div class="phase-title">Validation & Testing</div><div class="phase-desc">Establish testing infrastructure for each artifact category. Create automated validation scripts that verify functionality, check dependencies, and confirm API integrations.</div></div></div>
-        <div class="phase"><div class="phase-num">4</div><div class="phase-body"><div class="phase-title">Staged Deployment</div><div class="phase-desc">Execute phased rollout strategy starting with non-critical systems, progressing to core infrastructure, and culminating in production application deployments with automatic rollback.</div></div></div>
-      </div>
-    </div>
-
-    <div class="hub-panel" data-panel="security">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Authentication & Security Infrastructure</h3>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--red)">🔐 Multi-Layer Security Architecture</h4>
-        <p style="font-size:.82rem;color:var(--dim);line-height:1.6">The consolidated system requires orchestration of multiple authentication mechanisms across various services and platforms. Biometric authentication systems (FacePrintPay, biometric Git push scripts) provide additional security layers for sensitive operations.</p>
-      </div>
-      <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--red)">⚠️ Security Best Practice</h4>
-        <p style="font-size:.82rem;color:var(--text);line-height:1.6"><strong>Never commit API keys, authentication tokens, or passwords to any repository.</strong> Use .gitignore rules to exclude all .env files, credential directories, and service account JSON files.</p>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">🔑 Required Credentials</h4>
-        <ul class="infra-list">
-          <li>GitHub personal access tokens (classic and fine-grained)</li>
-          <li>Vercel authentication tokens for CLI deployments</li>
-          <li>Claude API keys for agent systems</li>
-          <li>GCP service account JSON files</li>
-          <li>Cloudflare API tokens and zone IDs</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="hub-panel" data-panel="commands">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Essential Command Reference</h3>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">📱 Termux Environment Setup</h4>
-        <div class="cmd-block"><span class="comment"># Termux Setup Commands</span>
-<span class="cmd">pkg update && pkg upgrade -y</span>
-<span class="cmd">pkg install git nodejs python openssh rclone -y</span></div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">🔗 GitHub Repository Management</h4>
-        <div class="cmd-block"><span class="comment"># GitHub Repository Management</span>
-<span class="cmd">git clone git@github.com:username/sovereigngtp.git</span>
-<span class="cmd">git config --global user.name "Your Name"</span>
-<span class="cmd">git config --global user.email "your.email@domain.com"</span></div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">🚀 Vercel Deployment</h4>
-        <div class="cmd-block"><span class="comment"># Vercel Deployment</span>
-<span class="cmd">npm install -g vercel</span>
-<span class="cmd">vercel login</span>
-<span class="cmd">vercel --prod</span></div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">📦 Artifact Compilation</h4>
-        <div class="cmd-block"><span class="comment"># Artifact Compilation</span>
-<span class="cmd">bash compile_artifacts.sh --target=all --output=./consolidated</span>
-<span class="cmd">chmod +x claude-github-sync.sh && ./claude-github-sync.sh</span></div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:10px">🩺 Health Check & Monitoring</h4>
-        <div class="cmd-block"><span class="comment"># Health Check & Monitoring</span>
-<span class="cmd">bash health_monitor.sh --check-all --report-json</span>
-<span class="cmd">python constellation-orchestrator.py --status --verbose</span></div>
-      </div>
-    </div>
-
-    <div class="hub-panel" data-panel="troubleshoot">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Common Issues & Troubleshooting</h3>
-      <div class="issue-card">
-        <div class="issue-title">Vercel Deployment Failures (401/404 Errors)</div>
-        <div class="issue-desc">Authentication token expired or misconfigured. Run vercel login to refresh credentials.</div>
-        <ul class="issue-fix"><li>rm -rf ~/.vercel</li><li>vercel login</li><li>vercel link</li></ul>
-      </div>
-      <div class="issue-card">
-        <div class="issue-title">Termux Storage Exhaustion</div>
-        <div class="issue-desc">Android devices have limited internal storage. Implement aggressive cleanup strategies.</div>
-        <ul class="issue-fix"><li>bash storage_cleanup.sh --aggressive</li><li>termux-setup-storage && mv ~/projects /sdcard/</li><li>npm cache clean --force && pip cache purge</li></ul>
-      </div>
-      <div class="issue-card">
-        <div class="issue-title">Git Authentication Failures</div>
-        <div class="issue-desc">SSH keys not properly configured or GitHub personal access tokens expired.</div>
-        <ul class="issue-fix"><li>ssh -T git@github.com</li><li>eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519</li><li>git remote set-url origin git@github.com:user/repo.git</li></ul>
-      </div>
-      <div class="issue-card">
-        <div class="issue-title">Agent System Crashes & Instability</div>
-        <div class="issue-desc">Planetary agent systems consuming excessive resources or encountering race conditions.</div>
-        <ul class="issue-fix"><li>ps aux | grep python</li><li>pkill -f constellation && ./start_agents.sh</li><li>tail -f ~/logs/agent_*.log</li></ul>
-      </div>
-    </div>
-
-    <div class="hub-panel" data-panel="metrics">
-      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">System Health Metrics & Performance Tracking</h3>
-      <div class="metric-grid">
-        <div class="metric"><div class="metric-val">583K+</div><div class="metric-lbl">Total Artifacts</div><div class="metric-target">Files managed across all environments</div></div>
-        <div class="metric"><div class="metric-val">200+</div><div class="metric-lbl">Active Repositories</div><div class="metric-target">GitHub repos requiring synchronization</div></div>
-        <div class="metric"><div class="metric-val">50+</div><div class="metric-lbl">Vercel Deployments</div><div class="metric-target">Live production and staging environments</div></div>
-        <div class="metric"><div class="metric-val">25</div><div class="metric-lbl">Agent Systems</div><div class="metric-target">Autonomous agents in production operation</div></div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:12px">🎯 Performance Targets</h4>
-        <ul class="infra-list">
-          <li>Deployment success rate: <strong style="color:var(--green)">95%+</strong></li>
-          <li>Artifact compilation time: <strong style="color:var(--green)">&lt;5min</strong> for full rebuild</li>
-          <li>Storage utilization: <strong style="color:var(--amber)">Alert at 80%</strong> capacity</li>
-          <li>Agent system uptime: <strong style="color:var(--green)">99.5%+</strong></li>
-          <li>API response latency: <strong style="color:var(--green)">&lt;200ms p95</strong></li>
-        </ul>
-      </div>
-      <h3 style="font-size:1.1rem;font-weight:700;margin:24px 0 16px">Next Steps & Recommended Actions</h3>
-      <div class="action-list">
-        <div class="action-item"><div class="action-num">1</div><div class="action-body"><div class="action-title">Execute Comprehensive Audit</div><div class="action-desc">Run full system scan using enhanced file finder scripts to catalog all artifacts, identify dependencies, and map inter-project relationships.</div></div></div>
-        <div class="action-item"><div class="action-num">2</div><div class="action-body"><div class="action-title">Establish Testing Infrastructure</div><div class="action-desc">Build automated test suites for core components before attempting any consolidation. Implement CI/CD pipelines with GitHub Actions.</div></div></div>
-        <div class="action-item"><div class="action-num">3</div><div class="action-body"><div class="action-title">Implement Monitoring & Alerting</div><div class="action-desc">Deploy health check systems across all environments. Configure alerts for critical failures, resource exhaustion, and authentication issues.</div></div></div>
-        <div class="action-item"><div class="action-num">4</div><div class="action-body"><div class="action-title">Document Architecture & Procedures</div><div class="action-desc">Create comprehensive documentation covering system architecture, deployment procedures, troubleshooting guides, and operational runbooks.</div></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="controls">
-    <input type="text" class="search" id="search" placeholder="🔍 Search artifacts by name, category, or keyword...">
-  </div>
-
-  <div class="filters" id="filters"></div>
-
-  <div class="results-bar">
-    <div class="results-count" id="resultsCount"></div>
-    <div class="mono" style="font-size:.75rem;color:var(--dim)">Last indexed: <span style="color:var(--green)">Just now</span></div>
-  </div>
-
-  <div class="artifact-list" id="artifactList"></div>
-
-  <footer>
-    <p>© 2026 AiKre8tive • Kre8tive Konceptz • <a href="https://kre8tive.space" target="_blank">kre8tive.space</a> • <a href="https://github.com/FacePrintPay" target="_blank">GitHub</a> • <a href="tel:9205501279">920-550-1279</a> • <a href="mailto:cygel.co@gmail.com">cygel.co@gmail.com</a></p>
-  </footer>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
-
-<script>
-const artifacts = [
-  {t:"Red Hat Tech Days: Sovereign AI Infrastructure Pitch",c:"Constellation-25",type:"deck",time:"14 min ago",desc:"Comprehensive catalog of all artifacts, projects, and systems built across the Sovereign AI ecosystem.",link:"https://claude.ai/public/artifacts"},
-  {t:"Constellation-25 Integration - Complete System Documentation",c:"Constellation-25",type:"md",time:"10h ago",desc:"Full integration documentation for the 25-agent orchestration system.",link:"https://claude.ai/public/artifacts"},
-  {t:"constellation-orchestrator.py - 25 Agent System",c:"Constellation-25",type:"py",time:"10h ago",desc:"Core orchestrator managing 25 planetary agents with async task routing.",link:"https://claude.ai/public/artifacts"},
-  {t:"Claude-to-GitHub Automation System",c:"Constellation-25",type:"sys",time:"10h ago",desc:"Bidirectional sync between Claude artifacts and GitHub repositories.",link:"https://claude.ai/public/artifacts"},
-  {t:"MrGTTP Total Recall System - Complete Documentation",c:"Total Recall",type:"md",time:"10h ago",desc:"Complete documentation system with full automation scripts.",link:"https://claude.ai/public/artifacts"},
-  {t:"claude-github-sync.sh - Full Automation Script",c:"Total Recall",type:"sh",time:"10h ago",desc:"Bash automation for syncing Claude artifacts to GitHub.",link:"https://claude.ai/public/artifacts"},
-  {t:"compile_artifacts.sh",c:"Total Recall",type:"sh",time:"11h ago",desc:"Script to compile all artifacts into a unified registry.",link:"https://claude.ai/public/artifacts"},
-  {t:"Claude Artifacts Compiler - Complete Documentation",c:"Compiler",type:"md",time:"11h ago",desc:"Full documentation for the artifacts compilation system.",link:"https://claude.ai/public/artifacts"},
-  {t:"The Real Kre8tive Pitch - AI Ecosystem Play",c:"Platform",type:"deck",time:"1d ago",desc:"Strategic vision for building interconnected AI systems.",link:"https://claude.ai/public/artifacts"},
-  {t:"SovereignGTP Pitch Page",c:"Platform",type:"html",time:"1d ago",desc:"Pitch page for the SovereignGTP platform.",link:"https://claude.ai/public/artifacts"},
-  {t:"Biometric Authentication System (Replaces SSH Keys)",c:"Security",type:"py",time:"2d ago",desc:"Biometric auth replacing traditional SSH key authentication.",link:"https://claude.ai/public/artifacts"},
-  {t:"Sovereign AI Command Center",c:"Platform",type:"html",time:"2d ago",desc:"Central command dashboard for the Sovereign AI ecosystem.",link:"https://claude.ai/public/artifacts"},
-  {t:"THE NUCLEUS - Master System Integration",c:"Platform",type:"sys",time:"2d ago",desc:"Master system integration hub connecting all components.",link:"https://claude.ai/public/artifacts"},
-  {t:"Sovereign AI Empire - Master Inventory Dashboard",c:"Platform",type:"html",time:"4d ago",desc:"Master inventory dashboard for the entire ecosystem.",link:"https://claude.ai/public/artifacts"},
-  {t:"Ultimate Termux Deep Scanner",c:"Termux",type:"sh",time:"4d ago",desc:"Deep scanning tool for Termux environments.",link:"https://claude.ai/public/artifacts"},
-  {t:"SovereignGTP - Functional Agents System",c:"Platform",type:"py",time:"5d ago",desc:"Functional agents system for SovereignGTP.",link:"https://claude.ai/public/artifacts"},
-  {t:"YC Application Form - Copy/Paste Ready",c:"Legal",type:"md",time:"7d ago",desc:"Y Combinator application form ready for submission.",link:"https://claude.ai/public/artifacts"},
-  {t:"Sovereign Backend Server (Node.js)",c:"Backend",type:"js",time:"7d ago",desc:"Node.js backend server implementation.",link:"https://claude.ai/public/artifacts"},
-  {t:"Cloudflare Worker (orange-recipe-216c)",c:"Backend",type:"js",time:"7d ago",desc:"Cloudflare Worker deployment.",link:"https://claude.ai/public/artifacts"},
-  {t:"AiMetaverse Ecosystem Dashboard",c:"AiMetaverse",type:"html",time:"10d ago",desc:"Interactive dashboard for the AiMetaverse ecosystem.",link:"https://claude.ai/public/artifacts"},
-  {t:"Executive Summary: White v. OpenAI Data Sovereignty Claims",c:"Legal",type:"md",time:"10d ago",desc:"Legal research on data sovereignty claims.",link:"https://claude.ai/public/artifacts"},
-  {t:"AiMetaverse Master Artifact Hub - Live Portfolio",c:"AiMetaverse",type:"html",time:"10d ago",desc:"Live portfolio artifact hub.",link:"https://claude.ai/public/artifacts"},
-  {t:"Unified API Manager - Master Integration Hub",c:"Backend",type:"js",time:"10d ago",desc:"Unified API management hub.",link:"https://claude.ai/public/artifacts"},
-  {t:"One-Click Deploy Script - All Artifacts",c:"DevOps",type:"sh",time:"10d ago",desc:"One-click deployment for all artifacts.",link:"https://claude.ai/public/artifacts"},
-  {t:"Deployment Orchestrator - Working MVP",c:"DevOps",type:"py",time:"10d ago",desc:"Working MVP deployment orchestrator.",link:"https://claude.ai/public/artifacts"},
-  {t:"Interactive Agent Dashboard - Working MVP",c:"Platform",type:"html",time:"10d ago",desc:"Interactive agent dashboard MVP.",link:"https://claude.ai/public/artifacts"},
-  {t:"Planetary AI Agent System - Working MVP",c:"Platform",type:"html",time:"10d ago",desc:"Planetary AI agent system MVP.",link:"https://claude.ai/public/artifacts"},
-  {t:"MrGGTP Command Dashboard - Working MVP",c:"Platform",type:"html",time:"10d ago",desc:"MrGGTP command dashboard MVP.",link:"https://claude.ai/public/artifacts"},
-  {t:"Planetary AI Agent System - Python",c:"Platform",type:"py",time:"11d ago",desc:"Python implementation of planetary agents.",link:"https://claude.ai/public/artifacts"},
-  {t:"AiMetaverse - Investor Pitch Deck",c:"AiMetaverse",type:"deck",time:"11d ago",desc:"Investor pitch deck.",link:"https://claude.ai/public/artifacts"},
-  {t:"Ultimate One-Command Deploy Script",c:"DevOps",type:"sh",time:"11d ago",desc:"One-command deployment.",link:"https://claude.ai/public/artifacts"},
-  {t:"Master GitHub & Vercel Deploy Script",c:"DevOps",type:"sh",time:"11d ago",desc:"Master deployment script.",link:"https://claude.ai/public/artifacts"},
-  {t:"Deep History Hunter - Every Command Everywhere",c:"DevOps",type:"sh",time:"15d ago",desc:"Deep history search across all commands.",link:"https://claude.ai/public/artifacts"},
-  {t:"All CygNus Builds Summary",c:"CygNus Archive",type:"md",time:"15d ago",desc:"Summary of all CygNus builds.",link:"https://claude.ai/public/artifacts"},
-  {t:"Master CygNus Archive Combiner",c:"CygNus Archive",type:"sh",time:"15d ago",desc:"Master archive combiner.",link:"https://claude.ai/public/artifacts"},
-  {t:"Enhanced PaTHos Build Orchestrator",c:"PaTHos",type:"sh",time:"18d ago",desc:"PaTHos build orchestrator.",link:"https://claude.ai/public/artifacts"},
-  {t:"Enhanced NLP2CODE Orchestrator",c:"NLP2CODE",type:"sh",time:"18d ago",desc:"NLP2CODE orchestrator.",link:"https://claude.ai/public/artifacts"},
-  {t:"Enhanced PaTHos AI Flask App",c:"PaTHos",type:"py",time:"18d ago",desc:"PaTHos Flask app.",link:"https://claude.ai/public/artifacts"},
-  {t:"MyBuyO Enterprise UI/UX Platform",c:"MyBuyo",type:"html",time:"18d ago",desc:"MyBuyO enterprise UI.",link:"https://claude.ai/public/artifacts"},
-  {t:"Secure Biometric Deployment Authentication System",c:"Security",type:"py",time:"18d ago",desc:"Biometric deployment auth.",link:"https://claude.ai/public/artifacts"},
-  {t:"SovereignVault Manager Script",c:"Security",type:"sh",time:"18d ago",desc:"SovereignVault manager.",link:"https://claude.ai/public/artifacts"},
-  {t:"Planetary AI Core System",c:"Platform",type:"py",time:"18d ago",desc:"Planetary AI core.",link:"https://claude.ai/public/artifacts"},
-  {t:"TotalRecall Blockchain Evidence Pipeline",c:"Total Recall",type:"py",time:"18d ago",desc:"Blockchain evidence pipeline.",link:"https://claude.ai/public/artifacts"},
-  {t:"OpenAI Monitoring & Ingestion Detection Suite",c:"Security",type:"py",time:"18d ago",desc:"OpenAI monitoring.",link:"https://claude.ai/public/artifacts"},
-  {t:"AI IP Theft & Ingestion Detection Engine",c:"Security",type:"py",time:"18d ago",desc:"IP theft detection.",link:"https://claude.ai/public/artifacts"},
-  {t:"Ultimate Vercel Auto-Fixer",c:"DevOps",type:"sh",time:"18d ago",desc:"Vercel auto-fixer.",link:"https://claude.ai/public/artifacts"},
-  {t:"Advanced Multi-Agent Orchestration Engine",c:"Platform",type:"py",time:"18d ago",desc:"Multi-agent engine.",link:"https://claude.ai/public/artifacts"},
-  {t:"Federal Complaint - Cygel Sampson White v. OpenAI et al.",c:"Legal",type:"md",time:"18d ago",desc:"Federal complaint.",link:"https://claude.ai/public/artifacts"},
-  {t:"ML-Powered Orchestrator - The Final Evolution",c:"Platform",type:"py",time:"18d ago",desc:"ML orchestrator.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts + TotalRecall Forensic Integration",c:"VideoCourts",type:"py",time:"18d ago",desc:"Forensic integration.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts Biometric Gateway + ID.me Integration",c:"VideoCourts",type:"py",time:"18d ago",desc:"ID.me integration.",link:"https://claude.ai/public/artifacts"},
-  {t:"Biometric Auth Plugin - Sovereign Security Library",c:"Security",type:"py",time:"18d ago",desc:"Biometric plugin.",link:"https://claude.ai/public/artifacts"},
-  {t:"NLP2CODE Ramble - Voice-Powered Biometric Dev",c:"NLP2CODE",type:"py",time:"18d ago",desc:"Voice-powered dev.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts - Biometric Virtual Courtroom Platform",c:"VideoCourts",type:"html",time:"18d ago",desc:"Virtual courtroom.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts - Complete Full-Stack System",c:"VideoCourts",type:"py",time:"18d ago",desc:"Full-stack system.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts API Documentation",c:"VideoCourts",type:"md",time:"18d ago",desc:"API docs.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts Licensing Agreement",c:"VideoCourts",type:"md",time:"18d ago",desc:"Licensing agreement.",link:"https://claude.ai/public/artifacts"},
-  {t:"TotalRecall ULTRA v2025 - Complete Fixed Version",c:"Total Recall",type:"py",time:"18d ago",desc:"TotalRecall ULTRA.",link:"https://claude.ai/public/artifacts"},
-  {t:"YESQUID All-in-One with Built-in State Management",c:"YesQuid",type:"py",time:"18d ago",desc:"YesQuid all-in-one.",link:"https://claude.ai/public/artifacts"},
-  {t:"Kre8tive Konceptz RepoDepo - Ultimate Artifact Aggregator",c:"Platform",type:"py",time:"18d ago",desc:"Artifact aggregator.",link:"https://claude.ai/public/artifacts"},
-  {t:"FacePrintPay GitHub Authentication Integration",c:"Security",type:"sh",time:"18d ago",desc:"FacePrintPay GitHub.",link:"https://claude.ai/public/artifacts"},
-  {t:"Planetary Agents Master Hub - Complete Ecosystem Integration",c:"Platform",type:"html",time:"18d ago",desc:"Master hub.",link:"https://claude.ai/public/artifacts"},
-  {t:"YesQuid Full Stack Web Dashboard",c:"YesQuid",type:"html",time:"18d ago",desc:"YesQuid dashboard.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGENTIK - Complete Product Deployment Script",c:"AGENTIK",type:"sh",time:"18d ago",desc:"AGENTIK deploy.",link:"https://claude.ai/public/artifacts"},
-  {t:"Orchestrator Daemon",c:"Platform",type:"py",time:"18d ago",desc:"Orchestrator daemon.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGENTIK - Complete Product Specification",c:"AGENTIK",type:"md",time:"18d ago",desc:"Product spec.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGENTIK Live Dashboard - Connected to Backend",c:"AGENTIK",type:"html",time:"18d ago",desc:"Live dashboard.",link:"https://claude.ai/public/artifacts"},
-  {t:"SovereignGTP Series A Deck - Complete",c:"Platform",type:"deck",time:"18d ago",desc:"Series A deck.",link:"https://claude.ai/public/artifacts"},
-  {t:"revenue_generator.py",c:"Platform",type:"py",time:"18d ago",desc:"Revenue generator.",link:"https://claude.ai/public/artifacts"},
-  {t:"Total Recall Forensic Analysis Engine",c:"Total Recall",type:"py",time:"18d ago",desc:"Forensic engine.",link:"https://claude.ai/public/artifacts"},
-  {t:"Total Recall - Data Wipe Detector (Fixed)",c:"Total Recall",type:"sh",time:"18d ago",desc:"Data wipe detector.",link:"https://claude.ai/public/artifacts"},
-  {t:"Stripe Webhook - Real-Time Dashboard + Email Alerts",c:"Backend",type:"py",time:"18d ago",desc:"Stripe webhook.",link:"https://claude.ai/public/artifacts"},
-  {t:"YesQuid Pro War Room - Live Money Printer Dashboard",c:"YesQuid",type:"html",time:"18d ago",desc:"War room dashboard.",link:"https://claude.ai/public/artifacts"},
-  {t:"Kre8tive Holdings: Equity Partnership Proposal",c:"Kre8tive Holdings",type:"deck",time:"18d ago",desc:"Equity partnership.",link:"https://claude.ai/public/artifacts"},
-  {t:"VideoCourts.com - Complete Business Plan",c:"VideoCourts",type:"md",time:"18d ago",desc:"Business plan.",link:"https://claude.ai/public/artifacts"},
-  {t:"WHITE v. GOOGLE LLC - Complete Legal Complaint",c:"Legal",type:"md",time:"18d ago",desc:"Google complaint.",link:"https://claude.ai/public/artifacts"},
-  {t:"Biometric Git Push Script",c:"Security",type:"sh",time:"18d ago",desc:"Biometric git push.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGI KRE8TIVE - Payment & Auth System",c:"Platform",type:"py",time:"18d ago",desc:"Payment system.",link:"https://claude.ai/public/artifacts"},
-  {t:"YesQuid Pro - Graded Live Demo",c:"YesQuid",type:"html",time:"18d ago",desc:"Live demo.",link:"https://claude.ai/public/artifacts"},
-  {t:"Stripe Payment API Backend",c:"Backend",type:"py",time:"18d ago",desc:"Stripe backend.",link:"https://claude.ai/public/artifacts"},
-  {t:"SovereignGTP 1000-Task Planetary Backlog System",c:"Platform",type:"py",time:"18d ago",desc:"1000-task backlog.",link:"https://claude.ai/public/artifacts"},
-  {t:"25-Agent IP Theft Detection Orchestrator",c:"Security",type:"py",time:"18d ago",desc:"IP theft orchestrator.",link:"https://claude.ai/public/artifacts"},
-  {t:"Total Recall Forensic Engine (Optimized)",c:"Total Recall",type:"py",time:"18d ago",desc:"Optimized engine.",link:"https://claude.ai/public/artifacts"},
-  {t:"Monorepo Builder - Consolidate All Repos",c:"DevOps",type:"sh",time:"18d ago",desc:"Monorepo builder.",link:"https://claude.ai/public/artifacts"},
-  {t:"UnI×@BLE - Public Launch Site",c:"Platform",type:"html",time:"18d ago",desc:"Launch site.",link:"https://claude.ai/public/artifacts"},
-  {t:"Sovereign Vault - Air-Gapped Protection System",c:"Security",type:"py",time:"18d ago",desc:"Air-gapped vault.",link:"https://claude.ai/public/artifacts"},
-  {t:"Total Recall - Forensic Evidence Collector",c:"Total Recall",type:"py",time:"18d ago",desc:"Evidence collector.",link:"https://claude.ai/public/artifacts"},
-  {t:"MESH BUNDLE - Universal AI Model Router",c:"Platform",type:"py",time:"18d ago",desc:"Model router.",link:"https://claude.ai/public/artifacts"},
-  {t:"YesQuid Sovereign Protocol - Complete Stack",c:"YesQuid",type:"py",time:"18d ago",desc:"Sovereign stack.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGENTIK Phone Stack - Mobile-First Hub",c:"AGENTIK",type:"html",time:"18d ago",desc:"Phone stack.",link:"https://claude.ai/public/artifacts"},
-  {t:"Cosmic Sovereign Hub - Complete Production Build",c:"Platform",type:"html",time:"18d ago",desc:"Production build.",link:"https://claude.ai/public/artifacts"},
-  {t:"Planetary Turbo - Fixed Multi-Agent System",c:"Platform",type:"py",time:"18d ago",desc:"Planetary turbo.",link:"https://claude.ai/public/artifacts"},
-  {t:"LiNQ2.xyz Bio-Auth Gateway",c:"Security",type:"html",time:"18d ago",desc:"Bio-auth gateway.",link:"https://claude.ai/public/artifacts"},
-  {t:"NLP2CODE 24-Hour Revenue War Room",c:"NLP2CODE",type:"html",time:"18d ago",desc:"Revenue war room.",link:"https://claude.ai/public/artifacts"},
-  {t:"RECORN - Screen Recording & ChatGPT Capture for Termux",c:"Termux",type:"sh",time:"18d ago",desc:"Screen recorder.",link:"https://claude.ai/public/artifacts"},
-  {t:"Master Orchestrator - The Witness System",c:"Platform",type:"py",time:"18d ago",desc:"Witness system.",link:"https://claude.ai/public/artifacts"},
-  {t:"SOVEREIGN_SYSTEM - Complete Bootstrap",c:"DevOps",type:"sh",time:"18d ago",desc:"Complete bootstrap.",link:"https://claude.ai/public/artifacts"},
-  {t:"AGI KRE8TIVE - AI Platform Dashboard",c:"Platform",type:"html",time:"18d ago",desc:"AI dashboard.",link:"https://claude.ai/public/artifacts"},
-  {t:"Sovereign Data Liberation Script",c:"Platform",type:"sh",time:"18d ago",desc:"Data liberation.",link:"https://claude.ai/public/artifacts"}
-];
-
-const typeIcons={py:'PY',sh:'SH',html:'HT',md:'MD',json:'JS',sys:'SY',legal:'L',deck:'DK',js:'JS'};
-const typeClasses={py:'py',sh:'sh',html:'html',md:'md',json:'json',sys:'sys',legal:'legal',deck:'deck',js:'js'};
-
-function getCategories(){
-  const cats={};
-  artifacts.forEach(a=>{cats[a.c]=(cats[a.c]||0)+1});
-  return cats;
-}
-
-function renderStats(){
-  const cats=getCategories();
-  const stats=document.getElementById('stats');
-  stats.innerHTML=`
-    <div class="stat"><div class="stat-val">${artifacts.length}</div><div class="stat-lbl">Total Artifacts</div></div>
-    <div class="stat"><div class="stat-val">${Object.keys(cats).length}</div><div class="stat-lbl">Categories</div></div>
-    <div class="stat"><div class="stat-val">583K+</div><div class="stat-lbl">Total Files</div></div>
-    <div class="stat"><div class="stat-val">200+</div><div class="stat-lbl">Repositories</div></div>
-  `;
-}
-
-function renderFilters(){
-  const cats=getCategories();
-  const filters=document.getElementById('filters');
-  filters.innerHTML=`<div class="chip active" data-cat="all">All (${artifacts.length})</div>`;
-  Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([cat,count])=>{
-    filters.innerHTML+=`<div class="chip" data-cat="${cat}">${cat} (${count})</div>`;
-  });
-  filters.querySelectorAll('.chip').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-      filters.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-      chip.classList.add('active');
-      renderList();
-    });
-  });
-}
-
-function renderList(){
-  const search=document.getElementById('search').value.toLowerCase();
-  const activeChip=document.querySelector('.chip.active');
-  const cat=activeChip?activeChip.dataset.cat:'all';
-  
-  let filtered=artifacts.filter(a=>{
-    const matchCat=cat==='all'||a.c===cat;
-    const matchSearch=!search||a.t.toLowerCase().includes(search)||a.c.toLowerCase().includes(search)||a.desc.toLowerCase().includes(search);
-    return matchCat&&matchSearch;
-  });
-  
-  document.getElementById('resultsCount').innerHTML=`Showing <strong>${filtered.length}</strong> of ${artifacts.length} artifacts`;
-  
-  const list=document.getElementById('artifactList');
-  if(filtered.length===0){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><p>No artifacts match your search</p></div>`;
-    return;
-  }
-  
-  list.innerHTML=filtered.map(a=>`
-    <div class="artifact" onclick="openModal(${artifacts.indexOf(a)})">
-      <div class="art-icon ${typeClasses[a.type]||'md'}">${typeIcons[a.type]||'??'}</div>
-      <div class="art-body">
-        <div class="art-title">${a.t}</div>
-        <div class="art-meta">
-          <span class="art-cat">${a.c}</span>
-          <span>📅 ${a.time}</span>
+      <section class="section">
+        <div class="section-header">
+          <div class="eyebrow">The Challenge</div>
+          <h2>Trust crisis in AI infrastructure</h2>
+          <p>Cloud-first intelligence exposes sensitive data, weak security boundaries, and compliance vulnerabilities.</p>
         </div>
-      </div>
-      <div class="art-actions">
-        <a href="${a.link}" target="_blank" class="art-btn primary" onclick="event.stopPropagation()">Open ↗</a>
-        <button class="art-btn" onclick="event.stopPropagation();copyLink('${a.link}')">Copy Link</button>
-      </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="icon">☁️</div>
+            <h3>Cloud dependency</h3>
+            <p>Data leaves your control and creates unnecessary exposure to third-party infrastructure and unknown processing flows.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🔓</div>
+            <h3>IP exposure</h3>
+            <p>Private workflows and proprietary context can leak into external training and hosting models without oversight.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🔐</div>
+            <h3>Authentication gaps</h3>
+            <p>Password-only access is insufficient for regulated environments requiring court-admissible and auditable verification.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div class="eyebrow">Platform design</div>
+          <h2>Secure, sovereign execution</h2>
+          <p>Built around biometric trust, local execution, and enterprise-grade operational discipline.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="icon">👆</div>
+            <h3>Biometric auth</h3>
+            <p>Multi-factor identity validation for high-trust workflows and forensic accountability on sensitive systems.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🛡️</div>
+            <h3>Zero-cloud</h3>
+            <p>On-device processing keeps data within controlled boundaries and reduces exfiltration and dependency risk.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🤖</div>
+            <h3>Specialized agents</h3>
+            <p>Purpose-built systems for legal, financial, and commerce operations that demand reliability and traceability.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>© 2026 SovereignGTP • <a href="https://github.com/FacePrintPay" target="_blank" rel="noreferrer">FacePrintPay</a></p>
+      </footer>
     </div>
-  `).join('');
-}
 
-function openModal(idx){
-  const a=artifacts[idx];
-  const content=document.getElementById('modalContent');
-  content.innerHTML=`
-    <div class="art-icon ${typeClasses[a.type]||'md'}" style="width:48px;height:48px;font-size:.9rem;margin-bottom:16px">${typeIcons[a.type]||'??'}</div>
-    <h3>${a.t}</h3>
-    <div class="modal-meta">
-      <span class="art-cat">${a.c}</span>
-      <span style="color:var(--dim);font-size:.8rem">📅 ${a.time}</span>
-      <span style="color:var(--dim);font-size:.8rem">📄 ${a.type.toUpperCase()}</span>
-    </div>
-    <div class="modal-desc">${a.desc}</div>
-    <div class="modal-section">
-      <h4>Artifact Link</h4>
-      <p>${a.link}</p>
-    </div>
-    <div class="modal-actions">
-      <a href="${a.link}" target="_blank" class="art-btn primary">Open Artifact ↗</a>
-      <button class="art-btn" onclick="copyLink('${a.link}')">Copy Link</button>
-      <button class="art-btn" onclick="closeModal()">Close</button>
-    </div>
-  `;
-  document.getElementById('modalBg').classList.add('active');
-}
+    <script>
+      const API_BASE =
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+          ? "http://localhost:9000"
+          : "https://your-backend-domain.com";
 
-function closeModal(){
-  document.getElementById('modalBg').classList.remove('active');
-}
+      const backendStatusEl = document.getElementById("backendStatus");
 
-function copyLink(url){
-  navigator.clipboard.writeText(url).then(()=>{
-    showToast('🔗 Link copied to clipboard!');
-  }).catch(()=>{
-    showToast('⚠️ Could not copy link');
-  });
-}
+      async function checkBackend() {
+        try {
+          const res = await fetch(`${API_BASE}/health`, { cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-function showToast(msg){
-  const toast=document.getElementById('toast');
-  toast.textContent=msg;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),2500);
-}
+          const data = await res.json();
+          backendStatusEl.innerHTML =
+            `<strong>Connected</strong> • ${data.system || "Omnibus"} • ${data.status || "ok"}`;
+          backendStatusEl.className = "backend-status online";
+          console.log("Health response:", data);
+          return true;
+        } catch (err) {
+          backendStatusEl.innerHTML =
+            `<span class="offline">Backend offline</span> • Start with: <code>python api/omnibus.py 9000</code>`;
+          backendStatusEl.className = "backend-status offline";
+          console.error("Backend check failed:", err);
+          return false;
+        }
+      }
 
-document.querySelectorAll('.hub-tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.hub-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.hub-panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelector(`.hub-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
-  });
-});
+      async function sendBackendPrompt() {
+        try {
+          const res = await fetch(`${API_BASE}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "prompt",
+              prompt: "status check"
+            })
+          });
 
-document.getElementById('search').addEventListener('input',renderList);
-document.getElementById('modalBg').addEventListener('click',e=>{
-  if(e.target.id==='modalBg') closeModal();
-});
+          const data = await res.json();
+          console.log("Backend prompt response:", data);
 
-renderStats();
-renderFilters();
-renderList();
-</script>
-</body>
+          if (data && data.agents) {
+            backendStatusEl.innerHTML =
+              `<strong>Connected</strong> • Agents: ${data.agents.join(", ")}`;
+          }
+        } catch (err) {
+          console.error("Prompt request failed:", err);
+        }
+      }
+
+      document.getElementById("checkBackendBtn")?.addEventListener("click", checkBackend);
+      document.getElementById("sendPromptBtn")?.addEventListener("click", sendBackendPrompt);
+
+      window.addEventListener("DOMContentLoaded", () => {
+        checkBackend();
+        setTimeout(sendBackendPrompt, 1200);
+      });
+    </script>
+  </body>
 </html>
