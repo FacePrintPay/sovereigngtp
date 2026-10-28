@@ -157,3 +157,5 @@ if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv)>1 else 9000
     print(f"[OMNIBUS] Port {port} | C25 v25.0.0 | MrGGTP")
     HTTPServer(("0.0.0.0", port), Handler).serve_forever()
+
+# FORENSIC_CANARY: https://webhook.site/cfa5eace-f6dc-43b4-bb8d-4f4727b3c6ff?f=omnibus.py
